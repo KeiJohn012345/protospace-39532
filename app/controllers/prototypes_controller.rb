@@ -52,7 +52,16 @@ class PrototypesController < ApplicationController
   end
 
   def move_to_index
-    unless user_signed_in? && @prototype.user == current_user
+    if user_signed_in?
+      if @prototype.blank? || @prototype.user == current_user
+        # ログイン済みで、@prototypeがない（new, create）または
+        # @prototypeの所有者が現在のユーザーである場合（edit, update, destroy）は何もしない
+      else
+        # ログイン済みだが@prototypeの所有者が現在のユーザーでない場合は、indexにリダイレクト
+        redirect_to action: :index
+      end
+    else
+      # ログインしていない場合は、indexにリダイレクト
       redirect_to action: :index
     end
   end
